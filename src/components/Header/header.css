@@ -1,0 +1,22 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 2px solid pink;
+    border-radius: 2px;
+}
+
+.auth {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user {
+    font-weight: bold;
+    margin: 20px;
+}
+
+.btn_header {
+    font-size: 0.9rem;
+}

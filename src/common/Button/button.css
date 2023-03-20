@@ -1,0 +1,18 @@
+.btn {
+    padding: 7px 30px;
+    border: 1px solid purple;
+    margin: 10px;
+    font-size: 1rem;
+}
+
+.btn:hover, .btn:focus {
+    background-color: purple;
+    outline: 1px solid purple;
+    color: white;
+}
+
+.btn_center {
+    display: block;
+    margin: 10px auto;
+}
+

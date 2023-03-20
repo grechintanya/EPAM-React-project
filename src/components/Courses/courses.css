@@ -1,0 +1,15 @@
+.courses {
+    padding: 20px;
+    border: 2px solid lightskyblue;
+    margin: 20px auto;
+}
+
+.courses header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn_add {
+    margin-right: 0;
+}
+

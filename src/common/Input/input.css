@@ -1,0 +1,17 @@
+.input {
+    width: 400px;
+    padding: 7px;
+    font-size: 1rem;
+    outline: none;
+    border: 1px solid orange;
+}
+
+.input:focus {
+    outline: 1px solid orange;
+}
+
+label {
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+}
