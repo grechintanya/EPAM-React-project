@@ -1,0 +1,42 @@
+.card {
+    border: 2px solid rgb(6, 173, 173);
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-left {
+    width: 65%;
+    margin-right: 30px;
+}
+
+.card-right {
+    width: calc(35% - 30px);
+}
+.card-info {
+    margin: 10px 0;
+}
+
+.card-info {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-info span {
+    font-weight: bold;
+}
+
+.card-title {
+    font-size: 1.8rem;
+    margin: 20px 0;
+}
+
+.description {
+    font-size: 0.9rem;
+}
+/* .btn_course {
+    display: block;
+    margin: 20px auto 0 auto;
+} */

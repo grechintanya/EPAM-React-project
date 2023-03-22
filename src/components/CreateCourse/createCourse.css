@@ -1,0 +1,55 @@
+.form_header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: flex-end;
+}
+
+.form_header .btn {
+    margin-bottom: 0;
+}
+
+.course_info {
+    border: 1px solid black;
+    padding: 20px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.course_info input {
+    width: 100%;
+}
+
+.course_info_item {
+    width: 45%;
+}
+
+.form_heading {
+    font-size: 1rem;
+    text-align: center;
+}
+
+.duration {
+    font-size: 1.5rem;
+}
+
+.duration span {
+    font-size: 2rem;
+}
+
+.author {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    align-items: center;
+}
+
+.author .btn {
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.author p {
+    margin: 0;
+}
