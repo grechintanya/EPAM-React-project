@@ -7,88 +7,83 @@ import { mockedAuthorsList } from '../../constants';
 import pipeDuration from '../../helpers/pipeDuration';
 import './createCourse.css';
 
-function CreateCourse({ courseData, setCourseData, handleSubmit }) {
+function CreateCourse(props) {
 	const [authorName, setAuthorName] = useState('');
-
 	const [authors, setAuthors] = useState(mockedAuthorsList);
-	const authorsList = authors.map((author) => {
-		return (
-			<div className='author' key={author.id}>
-				<p>{author.name}</p>
-				<Button
-					buttonText='Add author'
-					type='button'
-					handleClick={() => {
-						setCourseData({
-							...courseData,
-							authors: [
-								...courseData.authors,
-								{ id: author.id, name: author.name },
-							],
-						});
-						setAuthors((prev) => [
-							...prev.filter((item) => !(item.id === author.id)),
-						]);
-					}}
-				/>
-			</div>
-		);
-	});
 
-	const courseAuthors = courseData.authors.map((author) => {
+	const handleAddAuthor = (author) => {
+		props.setCourseAuthors([
+			...props.courseAuthors,
+			{ id: author.id, name: author.name },
+		]);
+		setAuthors([...authors.filter((item) => !(item.id === author.id))]);
+	};
+
+	const handleDeleteAuthor = (author) => {
+		props.setCourseAuthors([
+			...props.courseAuthors.filter((item) => !(item.id === author.id)),
+		]);
+		setAuthors([...authors, author]);
+	};
+
+	const renderAuthor = (author, text, handler) => {
 		return (
 			<div className='author' key={author.id}>
 				<p>{author.name}</p>
 				<Button
-					buttonText='Delete author'
+					buttonText={text}
 					type='button'
-					handleClick={() => {
-						setCourseData({
-							...courseData,
-							authors: [
-								...courseData.authors.filter(
-									(item) => !(item.id === author.id)
-								),
-							],
-						});
-						setAuthors([...authors, author]);
-					}}
+					handleClick={() => handler(author)}
 				/>
 			</div>
 		);
-	});
+	};
+
+	const authorsList = authors.map((author) =>
+		renderAuthor(author, 'Add author', handleAddAuthor)
+	);
+
+	const courseAuthorsList = props.courseAuthors.map((author) =>
+		renderAuthor(author, 'Delete author', handleDeleteAuthor)
+	);
 
 	function createAuthor() {
-		const newAuthor = { id: uuidv4(), name: authorName };
-		setAuthors([...authors, newAuthor]);
-		setAuthorName('');
-		mockedAuthorsList.push(newAuthor);
+		if (authorName.length > 2) {
+			const newAuthor = { id: uuidv4(), name: authorName };
+			setAuthors([...authors, newAuthor]);
+			setAuthorName('');
+		} else {
+			alert('Description length should be at least 2 characters');
+		}
 	}
 
 	return (
-		<form className='create_course' onSubmit={(e) => handleSubmit(e)}>
+		<form className='create_course' onSubmit={(e) => props.handleSubmit(e)}>
 			<div className='form_header'>
 				<div>
 					<Input
 						labelText='Title'
 						placeholderText='Enter title...'
 						id='course_title'
-						value={courseData.courseTitle}
-						handleChange={(e) =>
-							setCourseData({ ...courseData, title: e.target.value })
-						}
+						value={props.courseTitle}
+						handleChange={(e) => props.setCourseTitle(e.target.value)}
 					/>
 				</div>
-				<Button buttonText='Create Course' type='submit' />
+				<div className='buttons'>
+					<Button
+						buttonText='Cancel'
+						type='button'
+						handleClick={() => props.setNewCourseForm(!props.newCourseForm)}
+					/>
+					<Button buttonText='Create Course' type='submit' />
+				</div>
 			</div>
 			<Textarea
 				labelText='Description'
 				name='description'
 				placeholderText='Enter description'
-				value={courseData.description}
-				handleChange={(e) =>
-					setCourseData({ ...courseData, description: e.target.value })
-				}
+				value={props.courseDescription}
+				handleChange={(e) => props.setCourseDescription(e.target.value)}
 			/>
 			<div className='course_info'>
 				<div className='course_info_item'>
@@ -115,13 +110,11 @@ function CreateCourse({ courseData, setCourseData, handleSubmit }) {
 							placeholderText='Enter duration in minutes...'
 							id='duration'
 							type='number'
-							value={courseData.duration}
-							handleChange={(e) =>
-								setCourseData({ ...courseData, duration: e.target.value })
-							}
+							value={props.courseDuration}
+							handleChange={(e) => props.setCourseDuration(e.target.value)}
 						/>
 						<p className='duration'>
-							Duration: <span>{pipeDuration(courseData.duration)}</span> hours
+							Duration: <span>{pipeDuration(props.courseDuration)}</span> hours
 						</p>
 					</div>
 				</div>
@@ -129,8 +122,8 @@ function CreateCourse({ courseData, setCourseData, handleSubmit }) {
 					<h3 className='form_heading'>Authors</h3>
 					<div className='authors'>{authorsList}</div>
 					<h3 className='form_heading'>Course authors</h3>
-					{courseData.authors.length ? (
-						courseAuthors
+					{props.courseAuthors.length ? (
+						courseAuthorsList
 					) : (
 						<p>Author list is empty</p>
 					)}

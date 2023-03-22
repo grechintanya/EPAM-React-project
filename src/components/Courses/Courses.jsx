@@ -14,13 +14,12 @@ function Courses() {
 	const [query, setQuery] = useState('');
 	const [courses, setCourses] = useState(mockedCoursesList);
 	const [newCourseForm, setNewCourseForm] = useState(false);
-	const [courseData, setCourseData] = useState({
-		title: '',
-		description: '',
-		authors: [],
-		duration: '',
-	});
-	const courseList = courses.map((item, i) => {
+	const [courseTitle, setCourseTitle] = useState('');
+	const [courseDescription, setCourseDescription] = useState('');
+	const [courseAuthors, setCourseAuthors] = useState([]);
+	const [courseDuration, setCourseDuration] = useState('');
+
+	const renderCorsecard = (item, i) => {
 		return (
 			<CourseCard
 				key={i}
@@ -31,17 +30,19 @@ function Courses() {
 				creationDate={dateGenerator(item.creationDate)}
 			/>
 		);
-	});
+	};
+
+	const courseList = courses.map((item, i) => renderCorsecard(item, i));
 
 	function searchCourses(e) {
 		e.preventDefault();
 		if (query.length) {
-			const courses = mockedCoursesList.filter((course) => {
-				return (
+			const courses = mockedCoursesList.filter(
+				(course) =>
 					course.title.toLowerCase().includes(query.toLowerCase()) ||
 					course.id.toLowerCase().includes(query.toLowerCase())
-				);
-			});
+			);
+
 			setCourses(courses);
 		} else {
 			setCourses(mockedCoursesList);
@@ -51,42 +52,46 @@ function Courses() {
 	function saveNewCourse(e) {
 		e.preventDefault();
 		let isFormValid = true;
-		for (const key in courseData) {
-			if (!courseData[key].length) {
+		const fields = [
+			courseTitle,
+			courseDescription,
+			courseDuration,
+			courseAuthors,
+		];
+		for (const field of fields) {
+			if (!field.length) {
 				alert('Please, fill in all fields');
 				isFormValid = false;
 				break;
 			}
 		}
-		if (courseData.title.length < 2) {
+		if (courseTitle.length < 2) {
 			alert('Title length should be at least 2 characters');
 			isFormValid = false;
-		} else if (courseData.description.length < 2) {
+		} else if (courseDescription.length < 2) {
 			alert('Description length should be at least 2 characters');
 			isFormValid = false;
-		} else if (courseData.duration < 2) {
+		} else if (courseDuration < 2) {
 			alert('Duration should be at least 2 minutes');
 			isFormValid = false;
 		}
 		if (isFormValid) {
 			const newCourse = {
 				id: uuidv4(),
-				title: courseData.title,
-				description: courseData.description,
+				title: courseTitle,
+				description: courseDescription,
 				creationDate: new Date().toLocaleDateString().replaceAll('.', '/'),
-				duration: Number(courseData.duration),
-				authors: courseData.authors.map((item) => item.id),
+				duration: Number(courseDuration),
+				authors: courseAuthors.map((item) => item.id),
 			};
 			setCourses([...courses, newCourse]);
-			setNewCourseForm((prev) => !prev);
-			mockedCoursesList.push(newCourse);
-			console.log(mockedCoursesList);
+			setNewCourseForm(!newCourseForm);
 		}
 	}
 
 	return (
 		<div className='courses'>
-			{newCourseForm || (
+			{!newCourseForm ? (
 				<>
 					<header>
 						<SearchBar
@@ -97,17 +102,24 @@ function Courses() {
 						<Button
 							buttonText='Add new course'
 							className='btn_add'
-							handleClick={() => setNewCourseForm((prev) => !prev)}
+							handleClick={() => setNewCourseForm(!newCourseForm)}
 						/>
 					</header>
 					<div className='cards'>{courseList}</div>
 				</>
-			)}
-			{newCourseForm && (
+			) : (
 				<CreateCourse
-					courseData={courseData}
-					setCourseData={setCourseData}
+					courseTitle={courseTitle}
+					setCourseTitle={setCourseTitle}
+					courseDescription={courseDescription}
+					setCourseDescription={setCourseDescription}
+					courseAuthors={courseAuthors}
+					setCourseAuthors={setCourseAuthors}
+					courseDuration={courseDuration}
+					setCourseDuration={setCourseDuration}
 					handleSubmit={saveNewCourse}
+					newCourseForm={newCourseForm}
+					setNewCourseForm={setNewCourseForm}
 				/>
 			)}
 		</div>
