@@ -1,3 +1,4 @@
+import { PropTypes } from 'prop-types';
 import './textarea.css';
 
 function Textarea(props) {
@@ -5,7 +6,6 @@ function Textarea(props) {
 		<>
 			<label htmlFor={props.id}>{props.labelText}</label>
 			<textarea
-				name={props.name}
 				placeholder={props.placeholderText}
 				id={props.id}
 				onChange={props.handleChange}
@@ -14,5 +14,13 @@ function Textarea(props) {
 		</>
 	);
 }
+
+Textarea.propTypes = {
+	id: PropTypes.string,
+	labelText: PropTypes.string,
+	placeholderText: PropTypes.string,
+	value: PropTypes.string,
+	handleChange: PropTypes.func,
+};
 
 export default Textarea;

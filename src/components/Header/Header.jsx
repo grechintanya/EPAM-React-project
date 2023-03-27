@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { PropTypes } from 'prop-types';
 
 import Logo from './components/Logo/Logo';
 import Button from '../../common/Button/Button';
@@ -33,5 +34,10 @@ function Header({ userName, setUserName }) {
 		</header>
 	);
 }
+
+Header.propTypes = {
+	userName: PropTypes.string,
+	setUserName: PropTypes.func,
+};
 
 export default Header;

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { PropTypes } from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
+
 import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
 import Textarea from '../../common/Textarea/Textarea';
@@ -124,7 +126,7 @@ function CreateCourse({ courses, setCourses }) {
 				</div>
 				<Textarea
 					labelText='Description'
-					name='description'
+					id='description'
 					placeholderText='Enter description'
 					value={courseDescription}
 					handleChange={(e) => setCourseDescription(e.target.value)}
@@ -179,5 +181,19 @@ function CreateCourse({ courses, setCourses }) {
 		</main>
 	);
 }
+
+CreateCourse.propTypes = {
+	courses: PropTypes.arrayOf(
+		PropTypes.shape({
+			id: PropTypes.string,
+			title: PropTypes.string,
+			description: PropTypes.string,
+			creationDate: PropTypes.string,
+			duration: PropTypes.number,
+			authors: PropTypes.arrayOf(PropTypes.string),
+		})
+	),
+	setCourses: PropTypes.func,
+};
 
 export default CreateCourse;
