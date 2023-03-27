@@ -1,7 +1,20 @@
 .form_header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    align-items: flex-end;
+}
+
+.form_header div {
+    width: 45%;
+}
+
+.form_header .btn {
+    margin-bottom: 0;
+}
+
+.buttons {
+    text-align: right;
 }
 
 .course_info {

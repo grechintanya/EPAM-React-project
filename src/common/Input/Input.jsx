@@ -11,6 +11,7 @@ function Input(props) {
 				className={props.className ? 'input ' + props.className : 'input'}
 				onChange={props.handleChange}
 				id={props.id}
+				required={props.required}
 			/>
 		</>
 	);

@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import Button from '../../../../common/Button/Button';
 import './courseCard.css';
 
@@ -21,7 +23,9 @@ function CourseCard(props) {
 					<span>Created: </span>
 					{props.creationDate}
 				</p>
-				<Button buttonText='Show Course' className='btn_center' />
+				<Link to={`/courses/${props.courseID}`}>
+					<Button buttonText='Show Course' className='btn_center' />
+				</Link>
 			</div>
 		</div>
 	);

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
@@ -7,136 +8,175 @@ import { mockedAuthorsList } from '../../constants';
 import pipeDuration from '../../helpers/pipeDuration';
 import './createCourse.css';
 
-function CreateCourse({ courseData, setCourseData, handleSubmit }) {
+function CreateCourse({ courses, setCourses }) {
 	const [authorName, setAuthorName] = useState('');
-
 	const [authors, setAuthors] = useState(mockedAuthorsList);
-	const authorsList = authors.map((author) => {
-		return (
-			<div className='author' key={author.id}>
-				<p>{author.name}</p>
-				<Button
-					buttonText='Add author'
-					type='button'
-					handleClick={() => {
-						setCourseData({
-							...courseData,
-							authors: [
-								...courseData.authors,
-								{ id: author.id, name: author.name },
-							],
-						});
-						setAuthors((prev) => [
-							...prev.filter((item) => !(item.id === author.id)),
-						]);
-					}}
-				/>
-			</div>
-		);
-	});
+	const [courseTitle, setCourseTitle] = useState('');
+	const [courseDescription, setCourseDescription] = useState('');
+	const [courseAuthors, setCourseAuthors] = useState([]);
+	const [courseDuration, setCourseDuration] = useState('');
+	const navigate = useNavigate();
 
-	const courseAuthors = courseData.authors.map((author) => {
+	const handleAddAuthor = (author) => {
+		setCourseAuthors([...courseAuthors, { id: author.id, name: author.name }]);
+		setAuthors([...authors.filter((item) => !(item.id === author.id))]);
+	};
+
+	const handleDeleteAuthor = (author) => {
+		setCourseAuthors([
+			...courseAuthors.filter((item) => !(item.id === author.id)),
+		]);
+		setAuthors([...authors, author]);
+	};
+
+	function saveNewCourse(e) {
+		e.preventDefault();
+		let isFormValid = true;
+		const fields = [
+			courseTitle,
+			courseDescription,
+			courseDuration,
+			courseAuthors,
+		];
+		for (const field of fields) {
+			if (!field.length) {
+				alert('Please, fill in all fields');
+				isFormValid = false;
+				break;
+			}
+		}
+		if (courseTitle.length < 2) {
+			alert('Title length should be at least 2 characters');
+			isFormValid = false;
+		} else if (courseDescription.length < 2) {
+			alert('Description length should be at least 2 characters');
+			isFormValid = false;
+		} else if (courseDuration < 2) {
+			alert('Duration should be at least 2 minutes');
+			isFormValid = false;
+		}
+		if (isFormValid) {
+			const newCourse = {
+				id: uuidv4(),
+				title: courseTitle,
+				description: courseDescription,
+				creationDate: new Date().toLocaleDateString().replaceAll('.', '/'),
+				duration: Number(courseDuration),
+				authors: courseAuthors.map((item) => item.id),
+			};
+			setCourses([...courses, newCourse]);
+			navigate('/courses');
+		}
+	}
+
+	const renderAuthor = (author, text, handler) => {
 		return (
 			<div className='author' key={author.id}>
 				<p>{author.name}</p>
 				<Button
-					buttonText='Delete author'
+					buttonText={text}
 					type='button'
-					handleClick={() => {
-						setCourseData({
-							...courseData,
-							authors: [
-								...courseData.authors.filter(
-									(item) => !(item.id === author.id)
-								),
-							],
-						});
-						setAuthors([...authors, author]);
-					}}
+					handleClick={() => handler(author)}
 				/>
 			</div>
 		);
-	});
+	};
+
+	const authorsList = authors.map((author) =>
+		renderAuthor(author, 'Add author', handleAddAuthor)
+	);
+
+	const courseAuthorsList = courseAuthors.map((author) =>
+		renderAuthor(author, 'Delete author', handleDeleteAuthor)
+	);
 
 	function createAuthor() {
-		const newAuthor = { id: uuidv4(), name: authorName };
-		setAuthors([...authors, newAuthor]);
-		setAuthorName('');
-		mockedAuthorsList.push(newAuthor);
+		if (authorName.length > 2) {
+			const newAuthor = { id: uuidv4(), name: authorName };
+			setAuthors([...authors, newAuthor]);
+			setAuthorName('');
+		} else {
+			alert('Description length should be at least 2 characters');
+		}
 	}
 
 	return (
-		<form className='create_course' onSubmit={(e) => handleSubmit(e)}>
-			<div className='form_header'>
-				<div>
-					<Input
-						labelText='Title'
-						placeholderText='Enter title...'
-						id='course_title'
-						value={courseData.courseTitle}
-						handleChange={(e) =>
-							setCourseData({ ...courseData, title: e.target.value })
-						}
-					/>
-				</div>
-				<Button buttonText='Create Course' type='submit' />
-			</div>
-			<Textarea
-				labelText='Description'
-				name='description'
-				placeholderText='Enter description'
-				value={courseData.description}
-				handleChange={(e) =>
-					setCourseData({ ...courseData, description: e.target.value })
-				}
-			/>
-			<div className='course_info'>
-				<div className='course_info_item'>
+		<main>
+			<h1 className='heading'>Add a new course</h1>
+			<form className='create_course' onSubmit={(e) => saveNewCourse(e)}>
+				<div className='form_header'>
 					<div>
-						<h3 className='form_heading'>Add author</h3>
 						<Input
-							labelText='Author name'
-							placeholderText='Enter author name...'
-							id='author_name'
-							value={authorName}
-							handleChange={(e) => setAuthorName(e.target.value)}
-						/>
-						<Button
-							buttonText='Create author'
-							className='btn_center'
-							handleClick={createAuthor}
-							type='button'
+							labelText='Title'
+							placeholderText='Enter title...'
+							id='course_title'
+							value={courseTitle}
+							handleChange={(e) => setCourseTitle(e.target.value)}
+							required
 						/>
 					</div>
-					<div>
-						<h3 className='form_heading'>Duration</h3>
-						<Input
-							labelText='Duration'
-							placeholderText='Enter duration in minutes...'
-							id='duration'
-							type='number'
-							value={courseData.duration}
-							handleChange={(e) =>
-								setCourseData({ ...courseData, duration: e.target.value })
-							}
-						/>
-						<p className='duration'>
-							Duration: <span>{pipeDuration(courseData.duration)}</span> hours
-						</p>
+					<div className='buttons'>
+						<Link to='/courses'>
+							<Button buttonText='Cancel' type='button' />
+						</Link>
+						<Button buttonText='Create Course' type='submit' />
 					</div>
 				</div>
-				<div className='course_info_item'>
-					<h3 className='form_heading'>Authors</h3>
-					<div className='authors'>{authorsList}</div>
-					<h3 className='form_heading'>Course authors</h3>
-					{courseData.authors.length ? (
-						courseAuthors
-					) : (
-						<p>Author list is empty</p>
-					)}
+				<Textarea
+					labelText='Description'
+					name='description'
+					placeholderText='Enter description'
+					value={courseDescription}
+					handleChange={(e) => setCourseDescription(e.target.value)}
+					required
+				/>
+				<div className='course_info'>
+					<div className='course_info_item'>
+						<div>
+							<h3 className='form_heading'>Add author</h3>
+							<Input
+								labelText='Author name'
+								placeholderText='Enter author name...'
+								id='author_name'
+								value={authorName}
+								handleChange={(e) => setAuthorName(e.target.value)}
+							/>
+							<Button
+								buttonText='Create author'
+								className='btn_center'
+								handleClick={createAuthor}
+								type='button'
+							/>
+						</div>
+						<div>
+							<h3 className='form_heading'>Duration</h3>
+							<Input
+								labelText='Duration'
+								placeholderText='Enter duration in minutes...'
+								id='duration'
+								type='number'
+								value={courseDuration}
+								handleChange={(e) => setCourseDuration(e.target.value)}
+								required
+							/>
+							<p className='duration'>
+								Duration: <span>{pipeDuration(courseDuration)}</span> hours
+							</p>
+						</div>
+					</div>
+					<div className='course_info_item'>
+						<h3 className='form_heading'>Authors</h3>
+						<div className='authors'>{authorsList}</div>
+						<h3 className='form_heading'>Course authors</h3>
+						{courseAuthors.length ? (
+							courseAuthorsList
+						) : (
+							<p>Author list is empty</p>
+						)}
+					</div>
 				</div>
-			</div>
-		</form>
+			</form>
+		</main>
 	);
 }
 
