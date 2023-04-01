@@ -1,5 +1,11 @@
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import {
+	Route,
+	Navigate,
+	createBrowserRouter,
+	createRoutesFromElements,
+	RouterProvider,
+} from 'react-router-dom';
+import { useState } from 'react';
 
 import Header from './components/Header/Header';
 import Courses from './components/Courses/Courses';
@@ -8,42 +14,68 @@ import Login from './components/Login/Login';
 import CourseInfo from './components/CourseInfo/CourseInfo';
 import CreateCourse from './components/CreateCourse/CreateCourse';
 import NotFound from './components/NotFound/NotFound';
-import { mockedCoursesList } from './constants';
+import { mockedCoursesList, mockedAuthorsList } from './constants';
 
 function App() {
 	const [courses, setCourses] = useState(mockedCoursesList);
+	const [authors, setAuthors] = useState(mockedAuthorsList);
 	const [userName, setUserName] = useState(localStorage.getItem('userName'));
 	const [user, setUser] = useState({});
-	const token = localStorage.getItem('token');
-	const navigate = useNavigate();
 
-	useEffect(() => {
-		setUserName(localStorage.getItem('userName'));
-	}, [navigate, userName]);
+	const RequireAuth = ({ children }) => {
+		const token = localStorage.getItem('token');
+		if (!token) {
+			return <Navigate to='/login' />;
+		}
+		return children;
+	};
 
-	return (
-		<div className='container'>
-			<Header userName={userName} setUserName={setUserName} />
-			<Routes>
-				<Route
-					path='/'
-					element={
-						token ? <Navigate to='/courses' /> : <Navigate to='/login' />
-					}
-				/>
+	const router = createBrowserRouter(
+		createRoutesFromElements(
+			<Route
+				path='/'
+				element={<Header userName={userName} setUserName={setUserName} />}
+			>
 				<Route path='registration' element={<Registration />} />
 				<Route path='login' element={<Login user={user} setUser={setUser} />} />
 				<Route
 					path='courses'
-					element={<Courses courses={courses} setCourses={setCourses} />}
+					element={
+						<RequireAuth>
+							<Courses courses={courses} authors={authors} />
+						</RequireAuth>
+					}
 				/>
-				<Route path='courses/:courseID' element={<CourseInfo />} />
+				<Route
+					path='courses/:courseID'
+					element={
+						<RequireAuth>
+							<CourseInfo courses={courses} />
+						</RequireAuth>
+					}
+					errorElement={<NotFound />}
+				/>
 				<Route
 					path='courses/add'
-					element={<CreateCourse courses={courses} setCourses={setCourses} />}
+					element={
+						<RequireAuth>
+							<CreateCourse
+								courses={courses}
+								setCourses={setCourses}
+								allAuthors={authors}
+								setAllAuthors={setAuthors}
+							/>
+						</RequireAuth>
+					}
 				/>
 				<Route path='*' element={<NotFound />} />
-			</Routes>
+			</Route>
+		)
+	);
+
+	return (
+		<div className='container'>
+			<RouterProvider router={router} />
 		</div>
 	);
 }

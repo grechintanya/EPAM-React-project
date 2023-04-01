@@ -1,4 +1,5 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 
 import Logo from './components/Logo/Logo';
@@ -15,23 +16,41 @@ function Header({ userName, setUserName }) {
 		navigate('/login');
 	};
 
+	useEffect(() => {
+		setUserName(localStorage.getItem('userName'));
+	}, [userName, navigate]);
+
+	useEffect(() => {
+		const token = localStorage.getItem('token');
+		if (token) {
+			navigate('/courses');
+		} else {
+			navigate('/login');
+		}
+	}, []);
+
 	return (
-		<header className='header'>
-			<Logo />
-			{location.pathname !== '/login' &&
-			location.pathname !== '/registration' ? (
-				<div className='auth'>
-					<div className='user'>{userName}</div>
-					<Button
-						buttonText='Logout'
-						className='btn_header'
-						handleClick={() => logout()}
-					/>
-				</div>
-			) : (
-				''
-			)}
-		</header>
+		<>
+			<header className='header'>
+				<Logo />
+				{location.pathname !== '/login' &&
+				location.pathname !== '/registration' ? (
+					<div className='auth'>
+						<div className='user'>{userName}</div>
+						<Button
+							buttonText='Logout'
+							className='btn_header'
+							handleClick={() => logout()}
+						/>
+					</div>
+				) : (
+					''
+				)}
+			</header>
+			<main>
+				<Outlet />
+			</main>
+		</>
 	);
 }
 

@@ -1,10 +1,4 @@
-.courses {
-    padding: 20px;
-    border: 2px solid lightskyblue;
-    margin: 20px auto;
-}
-
-.courses header {
+.courses_header {
     display: flex;
     justify-content: space-between;
 }

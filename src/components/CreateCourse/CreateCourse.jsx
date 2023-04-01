@@ -6,9 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
 import Textarea from '../../common/Textarea/Textarea';
-import { mockedAuthorsList } from '../../constants';
 import pipeDuration from '../../helpers/pipeDuration';
 import './createCourse.css';
+import { mockedAuthorsList } from '../../constants';
 
 function CreateCourse({ courses, setCourses }) {
 	const [authorName, setAuthorName] = useState('');
@@ -18,16 +18,15 @@ function CreateCourse({ courses, setCourses }) {
 	const [courseAuthors, setCourseAuthors] = useState([]);
 	const [courseDuration, setCourseDuration] = useState('');
 	const navigate = useNavigate();
+	const sample = /[a-z]{2,}/gi;
 
 	const handleAddAuthor = (author) => {
 		setCourseAuthors([...courseAuthors, { id: author.id, name: author.name }]);
-		setAuthors([...authors.filter((item) => !(item.id === author.id))]);
+		setAuthors(authors.filter((item) => item.id !== author.id));
 	};
 
 	const handleDeleteAuthor = (author) => {
-		setCourseAuthors([
-			...courseAuthors.filter((item) => !(item.id === author.id)),
-		]);
+		setCourseAuthors(courseAuthors.filter((item) => item.id !== author.id));
 		setAuthors([...authors, author]);
 	};
 
@@ -47,13 +46,15 @@ function CreateCourse({ courses, setCourses }) {
 				break;
 			}
 		}
-		if (courseTitle.length < 2) {
-			alert('Title length should be at least 2 characters');
+		if (!sample.test(courseTitle)) {
+			alert('Title length should be at least 2 letters');
 			isFormValid = false;
-		} else if (courseDescription.length < 2) {
-			alert('Description length should be at least 2 characters');
+		}
+		if (!sample.test(courseDescription)) {
+			alert('Description length should be at least 2 letters');
 			isFormValid = false;
-		} else if (courseDuration < 2) {
+		}
+		if (courseDuration < 2) {
 			alert('Duration should be at least 2 minutes');
 			isFormValid = false;
 		}
@@ -93,17 +94,17 @@ function CreateCourse({ courses, setCourses }) {
 	);
 
 	function createAuthor() {
-		if (authorName.length > 2) {
+		if (sample.test(authorName)) {
 			const newAuthor = { id: uuidv4(), name: authorName };
 			setAuthors([...authors, newAuthor]);
 			setAuthorName('');
 		} else {
-			alert('Description length should be at least 2 characters');
+			alert('Description length should be at least 2 letters');
 		}
 	}
 
 	return (
-		<main>
+		<>
 			<h1 className='heading'>Add a new course</h1>
 			<form className='create_course' onSubmit={(e) => saveNewCourse(e)}>
 				<div className='form_header'>
@@ -178,7 +179,7 @@ function CreateCourse({ courses, setCourses }) {
 					</div>
 				</div>
 			</form>
-		</main>
+		</>
 	);
 }
 
