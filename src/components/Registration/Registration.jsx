@@ -28,7 +28,7 @@ function Registration() {
 	};
 
 	return (
-		<main>
+		<>
 			<h2 className='heading'>Registration</h2>
 			<form
 				className='registration_form'
@@ -61,7 +61,7 @@ function Registration() {
 			<p className='link_message'>
 				If you have an account you can <Link to='/login'>Login</Link>
 			</p>
-		</main>
+		</>
 	);
 }
 

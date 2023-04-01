@@ -28,7 +28,7 @@ function Login() {
 	};
 
 	return (
-		<main>
+		<>
 			<h2 className='heading'>Login</h2>
 			<form className='login_form' onSubmit={(e) => handleLogin(e)}>
 				<Input
@@ -50,7 +50,7 @@ function Login() {
 				If you not have an account you can{' '}
 				<Link to='/registration'>Registration</Link>
 			</p>
-		</main>
+		</>
 	);
 }
 
