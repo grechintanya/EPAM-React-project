@@ -1,5 +1,8 @@
+import { PropTypes } from 'prop-types';
+
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
+import './searchBar.css';
 
 function SearchBar(props) {
 	return (
@@ -14,5 +17,11 @@ function SearchBar(props) {
 		</form>
 	);
 }
+
+SearchBar.propTypes = {
+	query: PropTypes.string,
+	setQuery: PropTypes.func,
+	handleSubmit: PropTypes.func,
+};
 
 export default SearchBar;

@@ -1,0 +1,22 @@
+.heading {
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.registration_form {
+    width: 300px;
+    margin: 2rem auto;
+}
+
+.registration_form input {
+    margin-bottom: 1rem;
+}
+
+.registration_form label {
+    font-size: 1rem;
+}
+
+.link_message {
+    text-align: center;
+    font-size: 0.9rem;
+}

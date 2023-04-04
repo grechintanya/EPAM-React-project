@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom';
+import { PropTypes } from 'prop-types';
+
 import Button from '../../../../common/Button/Button';
 import './courseCard.css';
 
@@ -21,10 +24,21 @@ function CourseCard(props) {
 					<span>Created: </span>
 					{props.creationDate}
 				</p>
-				<Button buttonText='Show Course' className='btn_center' />
+				<Link to={`/courses/${props.courseID}`}>
+					<Button buttonText='Show Course' className='btn_center' />
+				</Link>
 			</div>
 		</div>
 	);
 }
+
+CourseCard.propTypes = {
+	title: PropTypes.string,
+	courseID: PropTypes.string,
+	description: PropTypes.string,
+	authors: PropTypes.string,
+	duration: PropTypes.string,
+	creationDate: PropTypes.string,
+};
 
 export default CourseCard;

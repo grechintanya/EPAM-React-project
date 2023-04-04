@@ -1,0 +1,28 @@
+main {
+    padding: 20px;
+    border: 2px solid lightskyblue;
+    margin: 20px auto;
+}
+
+.course {
+    display: flex;
+    padding: 20px;
+}
+
+.course-left {
+    width: 75%;
+    margin-right: 30px;
+    line-height: 1.5;
+}
+
+.info {
+    margin-bottom: 10px;
+}
+
+.info span {
+    font-weight: bold;
+}
+
+.link {
+    margin-left: 20px;
+}
