@@ -1,9 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
-import handleRequest from '../../helpers/handleRequest';
+import { handleUserLogin } from '../../services';
+import { userLogin } from '../../store/user/actionCreators';
 import './login.css';
 
 function Login() {
@@ -11,6 +13,7 @@ function Login() {
 	const [pswd, setPswd] = useState('');
 
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	const handleLogin = async (e) => {
 		e.preventDefault();
@@ -18,11 +21,11 @@ function Login() {
 			email: email,
 			password: pswd,
 		};
-		const result = await handleRequest(user, 'login');
+		const result = await handleUserLogin(user);
 		if (result?.successful) {
 			const token = result.result;
 			localStorage.setItem('token', token);
-			localStorage.setItem('userName', result.user.name);
+			dispatch(userLogin(result.user, result.result));
 			navigate('/courses');
 		}
 	};

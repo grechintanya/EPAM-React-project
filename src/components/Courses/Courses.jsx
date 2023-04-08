@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PropTypes } from 'prop-types';
+import { useSelector } from 'react-redux';
 
 import CourseCard from './components/CourseCard/CourseCard';
 import addAuthors from '../../helpers/addAuthors';
@@ -8,11 +8,18 @@ import pipeDuration from '../../helpers/pipeDuration';
 import dateGenerator from '../../helpers/dateGenerator';
 import SearchBar from './components/SearchBar/SearchBar';
 import Button from '../../common/Button/Button';
+import { selectAllAuthors, selectAllCourses } from '../../store/selectors';
 import './courses.css';
 
-function Courses({ courses, authors }) {
+function Courses() {
+	const courses = useSelector(selectAllCourses);
+	const authors = useSelector(selectAllAuthors);
 	const [query, setQuery] = useState('');
 	const [filteredCourses, setFilteredCourses] = useState(courses);
+
+	useEffect(() => {
+		setFilteredCourses(courses);
+	}, [courses]);
 
 	const courseList = filteredCourses.map((item, i) => (
 		<CourseCard
@@ -56,19 +63,5 @@ function Courses({ courses, authors }) {
 		</>
 	);
 }
-
-Courses.propTypes = {
-	courses: PropTypes.arrayOf(
-		PropTypes.shape({
-			id: PropTypes.string,
-			title: PropTypes.string,
-			description: PropTypes.string,
-			creationDate: PropTypes.string,
-			duration: PropTypes.number,
-			authors: PropTypes.arrayOf(PropTypes.string),
-		})
-	),
-	setCourses: PropTypes.func,
-};
 
 export default Courses;

@@ -36,3 +36,12 @@
 .description {
     font-size: 0.9rem;
 }
+
+.btn_icon {
+    padding: 7px;
+    margin: 3px;
+}
+
+.btn_right {
+    margin: 3px;
+}

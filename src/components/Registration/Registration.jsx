@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
-import handleRequest from '../../helpers/handleRequest';
+import { handleUserRegistration } from '../../services';
 import './registration.css';
 
 function Registration() {
@@ -21,7 +21,7 @@ function Registration() {
 			password: pswd,
 		};
 
-		const result = await handleRequest(user, 'register');
+		const result = await handleUserRegistration(user, 'register');
 		if (result.successful) {
 			navigate('/login');
 		}

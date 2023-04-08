@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { PropTypes } from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 
 import Input from '../../common/Input/Input';
@@ -8,16 +8,20 @@ import Button from '../../common/Button/Button';
 import Textarea from '../../common/Textarea/Textarea';
 import pipeDuration from '../../helpers/pipeDuration';
 import './createCourse.css';
-import { mockedAuthorsList } from '../../constants';
+import { newCourseSaved } from '../../store/courses/actionCreators';
+import { newAuthorSaved } from '../../store/authors/actionCreators';
+import { selectAllAuthors } from '../../store/selectors';
 
-function CreateCourse({ courses, setCourses }) {
+function CreateCourse() {
+	const allAuthors = useSelector(selectAllAuthors);
 	const [authorName, setAuthorName] = useState('');
-	const [authors, setAuthors] = useState(mockedAuthorsList);
+	const [authors, setAuthors] = useState(allAuthors);
 	const [courseTitle, setCourseTitle] = useState('');
 	const [courseDescription, setCourseDescription] = useState('');
 	const [courseAuthors, setCourseAuthors] = useState([]);
 	const [courseDuration, setCourseDuration] = useState('');
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const sample = /[a-z]{2,}/gi;
 
 	const handleAddAuthor = (author) => {
@@ -67,7 +71,7 @@ function CreateCourse({ courses, setCourses }) {
 				duration: Number(courseDuration),
 				authors: courseAuthors.map((item) => item.id),
 			};
-			setCourses([...courses, newCourse]);
+			dispatch(newCourseSaved(newCourse));
 			navigate('/courses');
 		}
 	}
@@ -96,10 +100,11 @@ function CreateCourse({ courses, setCourses }) {
 	function createAuthor() {
 		if (sample.test(authorName)) {
 			const newAuthor = { id: uuidv4(), name: authorName };
+			dispatch(newAuthorSaved(newAuthor));
 			setAuthors([...authors, newAuthor]);
 			setAuthorName('');
 		} else {
-			alert('Description length should be at least 2 letters');
+			alert("Author's name length should be at least 2 letters");
 		}
 	}
 
@@ -182,19 +187,5 @@ function CreateCourse({ courses, setCourses }) {
 		</>
 	);
 }
-
-CreateCourse.propTypes = {
-	courses: PropTypes.arrayOf(
-		PropTypes.shape({
-			id: PropTypes.string,
-			title: PropTypes.string,
-			description: PropTypes.string,
-			creationDate: PropTypes.string,
-			duration: PropTypes.number,
-			authors: PropTypes.arrayOf(PropTypes.string),
-		})
-	),
-	setCourses: PropTypes.func,
-};
 
 export default CreateCourse;

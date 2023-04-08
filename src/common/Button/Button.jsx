@@ -9,6 +9,7 @@ function Button(props) {
 			type={props.type}
 		>
 			{props.buttonText}
+			{props.children}
 		</button>
 	);
 }
@@ -16,8 +17,9 @@ function Button(props) {
 Button.propTypes = {
 	className: PropTypes.string,
 	type: PropTypes.string,
-	buttonText: PropTypes.string.isRequired,
+	buttonText: PropTypes.string,
 	handleClick: PropTypes.func,
+	children: PropTypes.element,
 };
 
 export default Button;
