@@ -1,27 +1,28 @@
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
-import { PropTypes } from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Logo from './components/Logo/Logo';
 import Button from '../../common/Button/Button';
+import { userLogout } from '../../store/user/actionCreators';
+import { selectUserName, selectUserToken } from '../../store/selectors';
 import './header.css';
 
-function Header({ userName, setUserName }) {
+function Header() {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const dispatch = useDispatch();
+	const userName = useSelector(selectUserName);
+
 	const logout = () => {
 		localStorage.removeItem('token');
-		localStorage.removeItem('userName');
-		setUserName('');
+		dispatch(userLogout());
 		navigate('/login');
 	};
 
-	useEffect(() => {
-		setUserName(localStorage.getItem('userName'));
-	}, [userName, navigate]);
+	const token = useSelector(selectUserToken);
 
 	useEffect(() => {
-		const token = localStorage.getItem('token');
 		if (token) {
 			navigate('/courses');
 		} else {
@@ -53,10 +54,5 @@ function Header({ userName, setUserName }) {
 		</>
 	);
 }
-
-Header.propTypes = {
-	userName: PropTypes.string,
-	setUserName: PropTypes.func,
-};
 
 export default Header;

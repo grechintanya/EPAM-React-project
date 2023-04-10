@@ -5,7 +5,8 @@ import {
 	createRoutesFromElements,
 	RouterProvider,
 } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Header from './components/Header/Header';
 import Courses from './components/Courses/Courses';
@@ -15,12 +16,36 @@ import CourseInfo from './components/CourseInfo/CourseInfo';
 import CreateCourse from './components/CreateCourse/CreateCourse';
 import NotFound from './components/NotFound/NotFound';
 import { mockedCoursesList, mockedAuthorsList } from './constants';
+import { fetchCourses, fetchAuthors } from './services';
+import { getAllCourses } from './store/courses/actionCreators';
+import { getAllAuthors } from './store/authors/actionCreators';
 
 function App() {
 	const [courses, setCourses] = useState(mockedCoursesList);
 	const [authors, setAuthors] = useState(mockedAuthorsList);
 	const [userName, setUserName] = useState(localStorage.getItem('userName'));
 	const [user, setUser] = useState({});
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		const addAuthors = async () => {
+			const result = await fetchAuthors();
+			if (result?.successful) {
+				dispatch(getAllAuthors(result.result));
+			}
+		};
+		addAuthors();
+	}, []);
+
+	useEffect(() => {
+		const addCourses = async () => {
+			const result = await fetchCourses();
+			if (result?.successful) {
+				dispatch(getAllCourses(result.result));
+			}
+		};
+		addCourses();
+	}, []);
 
 	const RequireAuth = ({ children }) => {
 		const token = localStorage.getItem('token');
@@ -32,17 +57,14 @@ function App() {
 
 	const router = createBrowserRouter(
 		createRoutesFromElements(
-			<Route
-				path='/'
-				element={<Header userName={userName} setUserName={setUserName} />}
-			>
+			<Route path='/' element={<Header />}>
 				<Route path='registration' element={<Registration />} />
 				<Route path='login' element={<Login user={user} setUser={setUser} />} />
 				<Route
 					path='courses'
 					element={
 						<RequireAuth>
-							<Courses courses={courses} authors={authors} />
+							<Courses />
 						</RequireAuth>
 					}
 				/>
@@ -50,7 +72,7 @@ function App() {
 					path='courses/:courseID'
 					element={
 						<RequireAuth>
-							<CourseInfo courses={courses} />
+							<CourseInfo />
 						</RequireAuth>
 					}
 					errorElement={<NotFound />}
@@ -59,12 +81,7 @@ function App() {
 					path='courses/add'
 					element={
 						<RequireAuth>
-							<CreateCourse
-								courses={courses}
-								setCourses={setCourses}
-								allAuthors={authors}
-								setAllAuthors={setAuthors}
-							/>
+							<CreateCourse />
 						</RequireAuth>
 					}
 				/>

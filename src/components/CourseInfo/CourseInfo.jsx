@@ -1,25 +1,25 @@
-import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import addAuthors from '../../helpers/addAuthors';
 import pipeDuration from '../../helpers/pipeDuration';
 import dateGenerator from '../../helpers/dateGenerator';
+import { selectAllAuthors, selectCourseByID } from '../../store/selectors';
 import './courseInfo.css';
 
-function CourseInfo({ courses }) {
+function CourseInfo() {
 	const { courseID } = useParams();
-	let course = useMemo(
-		() => courses.find((item) => item.id === courseID),
-		[courseID, courses]
-	);
+	let course = useSelector(selectCourseByID(courseID));
+	const authors = useSelector(selectAllAuthors);
+
 	let authorList;
 	if (!course) {
 		throw new Response('', {
 			statusText: `Course ${courseID} not found`,
 		});
 	} else {
-		authorList = addAuthors(course.authors, courses).map((author, i) => (
+		authorList = addAuthors(course.authors, authors).map((author, i) => (
 			<p key={i}>{author}</p>
 		));
 	}
