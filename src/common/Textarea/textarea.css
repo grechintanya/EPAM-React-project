@@ -1,6 +1,6 @@
 textarea {
     width: 100%;
-    min-height: 100px;
+    min-height: 200px;
     border: 1px solid yellow;
     padding: 10px;
 }

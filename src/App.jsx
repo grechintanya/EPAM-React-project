@@ -1,89 +1,70 @@
 import {
 	Route,
-	Navigate,
 	createBrowserRouter,
 	createRoutesFromElements,
 	RouterProvider,
 } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Header from './components/Header/Header';
 import Courses from './components/Courses/Courses';
 import Registration from './components/Registration/Registration';
 import Login from './components/Login/Login';
 import CourseInfo from './components/CourseInfo/CourseInfo';
-import CreateCourse from './components/CreateCourse/CreateCourse';
+import CourseForm from './components/CourseForm/courseForm';
 import NotFound from './components/NotFound/NotFound';
-import { mockedCoursesList, mockedAuthorsList } from './constants';
-import { fetchCourses, fetchAuthors } from './services';
-import { getAllCourses } from './store/courses/actionCreators';
-import { getAllAuthors } from './store/authors/actionCreators';
+import PrivateRoute from './components/PrivateRouter/PrivateRouter';
+import { getUserData } from './store/user/thunk';
+import { fetchAllCourses } from './store/courses/thunk';
+import { fetchAllAuthors } from './store/authors/thunk';
+import { selectUserToken } from './store/selectors';
 
 function App() {
-	const [courses, setCourses] = useState(mockedCoursesList);
-	const [authors, setAuthors] = useState(mockedAuthorsList);
-	const [userName, setUserName] = useState(localStorage.getItem('userName'));
-	const [user, setUser] = useState({});
 	const dispatch = useDispatch();
+	const token = useSelector(selectUserToken);
 
 	useEffect(() => {
-		const addAuthors = async () => {
-			const result = await fetchAuthors();
-			if (result?.successful) {
-				dispatch(getAllAuthors(result.result));
-			}
-		};
-		addAuthors();
+		dispatch(fetchAllAuthors());
 	}, []);
 
 	useEffect(() => {
-		const addCourses = async () => {
-			const result = await fetchCourses();
-			if (result?.successful) {
-				dispatch(getAllCourses(result.result));
-			}
-		};
-		addCourses();
+		dispatch(fetchAllCourses());
 	}, []);
 
-	const RequireAuth = ({ children }) => {
-		const token = localStorage.getItem('token');
-		if (!token) {
-			return <Navigate to='/login' />;
+	useEffect(() => {
+		if (token) {
+			dispatch(getUserData(token));
 		}
-		return children;
-	};
+	}, [token]);
 
 	const router = createBrowserRouter(
 		createRoutesFromElements(
 			<Route path='/' element={<Header />}>
 				<Route path='registration' element={<Registration />} />
-				<Route path='login' element={<Login user={user} setUser={setUser} />} />
-				<Route
-					path='courses'
-					element={
-						<RequireAuth>
-							<Courses />
-						</RequireAuth>
-					}
-				/>
+				<Route path='login' element={<Login />} />
+				<Route path='courses' element={<Courses />} />
 				<Route
 					path='courses/:courseID'
-					element={
-						<RequireAuth>
-							<CourseInfo />
-						</RequireAuth>
-					}
+					element={<CourseInfo />}
 					errorElement={<NotFound />}
 				/>
 				<Route
 					path='courses/add'
 					element={
-						<RequireAuth>
-							<CreateCourse />
-						</RequireAuth>
+						<PrivateRoute>
+							<CourseForm />
+						</PrivateRoute>
 					}
+				/>
+				<Route
+					path='courses/update/:courseID'
+					element={
+						<PrivateRoute>
+							<CourseForm />
+						</PrivateRoute>
+					}
+					errorElement={<NotFound />}
 				/>
 				<Route path='*' element={<NotFound />} />
 			</Route>

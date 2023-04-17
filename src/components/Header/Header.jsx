@@ -4,8 +4,12 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import Logo from './components/Logo/Logo';
 import Button from '../../common/Button/Button';
-import { userLogout } from '../../store/user/actionCreators';
-import { selectUserName, selectUserToken } from '../../store/selectors';
+import { userLogout } from '../../store/user/thunk';
+import {
+	selectUserName,
+	selectIsAuth,
+	selectUserToken,
+} from '../../store/selectors';
 import './header.css';
 
 function Header() {
@@ -13,22 +17,21 @@ function Header() {
 	const location = useLocation();
 	const dispatch = useDispatch();
 	const userName = useSelector(selectUserName);
+	const isAuth = useSelector(selectIsAuth);
+	const token = useSelector(selectUserToken);
 
 	const logout = () => {
-		localStorage.removeItem('token');
-		dispatch(userLogout());
+		dispatch(userLogout(token));
 		navigate('/login');
 	};
 
-	const token = useSelector(selectUserToken);
-
 	useEffect(() => {
-		if (token) {
+		if (isAuth) {
 			navigate('/courses');
 		} else {
 			navigate('/login');
 		}
-	}, []);
+	}, [isAuth]);
 
 	return (
 		<>

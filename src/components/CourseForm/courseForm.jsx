@@ -1,25 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
 import Textarea from '../../common/Textarea/Textarea';
 import pipeDuration from '../../helpers/pipeDuration';
-import './createCourse.css';
-import { newCourseSaved } from '../../store/courses/actionCreators';
-import { newAuthorSaved } from '../../store/authors/actionCreators';
-import { selectAllAuthors } from '../../store/selectors';
+import './courseForm.css';
+import { fetchAuthorCreate } from '../../store/authors/thunk';
+import {
+	selectAllAuthors,
+	selectCourseByID,
+	selectUserToken,
+} from '../../store/selectors';
+import {
+	fetchCourseUpdate,
+	fetchCourseCreate,
+} from '../../store/courses/thunk';
 
-function CreateCourse() {
+function CourseForm() {
+	const { courseID } = useParams();
+	let course = useSelector(selectCourseByID(courseID));
 	const allAuthors = useSelector(selectAllAuthors);
+	const token = useSelector(selectUserToken);
 	const [authorName, setAuthorName] = useState('');
-	const [authors, setAuthors] = useState(allAuthors);
-	const [courseTitle, setCourseTitle] = useState('');
-	const [courseDescription, setCourseDescription] = useState('');
+	const [courseTitle, setCourseTitle] = useState(course?.title || '');
+	const [courseDescription, setCourseDescription] = useState(
+		course?.description || ''
+	);
+	const [courseDuration, setCourseDuration] = useState(
+		course?.duration.toString() || ''
+	);
+
 	const [courseAuthors, setCourseAuthors] = useState([]);
-	const [courseDuration, setCourseDuration] = useState('');
+	const [authors, setAuthors] = useState(allAuthors);
+
+	useEffect(() => {
+		setCourseAuthors(
+			course
+				? allAuthors.filter((author) => course.authors.includes(author.id))
+				: []
+		);
+		setAuthors(
+			course
+				? allAuthors.filter((author) => !course.authors.includes(author.id))
+				: allAuthors
+		);
+	}, [allAuthors]);
+
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const sample = /[a-z]{2,}/gi;
@@ -34,7 +62,7 @@ function CreateCourse() {
 		setAuthors([...authors, author]);
 	};
 
-	function saveNewCourse(e) {
+	function saveCourse(e) {
 		e.preventDefault();
 		let isFormValid = true;
 		const fields = [
@@ -64,14 +92,18 @@ function CreateCourse() {
 		}
 		if (isFormValid) {
 			const newCourse = {
-				id: uuidv4(),
 				title: courseTitle,
 				description: courseDescription,
 				creationDate: new Date().toLocaleDateString().replaceAll('.', '/'),
 				duration: Number(courseDuration),
 				authors: courseAuthors.map((item) => item.id),
 			};
-			dispatch(newCourseSaved(newCourse));
+			if (course) {
+				dispatch(fetchCourseUpdate(courseID, newCourse, token));
+			} else {
+				dispatch(fetchCourseCreate(newCourse, token));
+			}
+
 			navigate('/courses');
 		}
 	}
@@ -99,9 +131,8 @@ function CreateCourse() {
 
 	function createAuthor() {
 		if (sample.test(authorName)) {
-			const newAuthor = { id: uuidv4(), name: authorName };
-			dispatch(newAuthorSaved(newAuthor));
-			setAuthors([...authors, newAuthor]);
+			const newAuthor = { name: authorName };
+			dispatch(fetchAuthorCreate(newAuthor, token));
 			setAuthorName('');
 		} else {
 			alert("Author's name length should be at least 2 letters");
@@ -110,8 +141,10 @@ function CreateCourse() {
 
 	return (
 		<>
-			<h1 className='heading'>Add a new course</h1>
-			<form className='create_course' onSubmit={(e) => saveNewCourse(e)}>
+			<h1 className='heading'>
+				{course ? `Edit the ${course.title} course` : 'Add a new course'}
+			</h1>
+			<form className='create_course' onSubmit={(e) => saveCourse(e)}>
 				<div className='form_header'>
 					<div>
 						<Input
@@ -127,7 +160,10 @@ function CreateCourse() {
 						<Link to='/courses'>
 							<Button buttonText='Cancel' type='button' />
 						</Link>
-						<Button buttonText='Create Course' type='submit' />
+						<Button
+							buttonText={course ? 'Update Course' : 'Create Course'}
+							type='submit'
+						/>
 					</div>
 				</div>
 				<Textarea
@@ -188,4 +224,4 @@ function CreateCourse() {
 	);
 }
 
-export default CreateCourse;
+export default CourseForm;

@@ -1,10 +1,11 @@
-import { LOGIN, LOGOUT } from './actionTypes';
+import { LOGIN, LOGOUT, GET_USER_DATA } from './actionTypes';
 
 const userInitialState = {
 	isAuth: false,
 	name: '',
 	email: '',
 	token: localStorage.getItem('token') || '',
+	role: '',
 };
 
 const authReducer = (state = userInitialState, action) => {
@@ -13,9 +14,13 @@ const authReducer = (state = userInitialState, action) => {
 			return {
 				...state,
 				isAuth: true,
-				name: action.payload.user.name,
-				email: action.payload.user.email,
-				token: action.payload.token,
+				token: action.payload,
+			};
+		case GET_USER_DATA:
+			return {
+				...state,
+				isAuth: true,
+				...action.payload,
 			};
 		case LOGOUT:
 			return {
@@ -24,6 +29,7 @@ const authReducer = (state = userInitialState, action) => {
 				name: '',
 				email: '',
 				token: '',
+				role: '',
 			};
 		default:
 			return state;

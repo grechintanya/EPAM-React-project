@@ -53,3 +53,5 @@ export const mockedAuthorsList = [
 		name: 'Valentina Larina',
 	},
 ];
+
+export const BASIC_URL = 'http://localhost:4000';
