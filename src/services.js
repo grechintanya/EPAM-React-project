@@ -1,6 +1,6 @@
-const BASIC_URL = 'http://localhost:4000';
+import { BASIC_URL } from './constants';
 
-const handleRequest = async (url, options = null) => {
+export const handleRequest = async (url, options = null) => {
 	try {
 		const response = await fetch(`${BASIC_URL}/${url}`, options);
 		const result = await response.json();

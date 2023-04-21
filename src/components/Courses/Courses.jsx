@@ -8,12 +8,17 @@ import pipeDuration from '../../helpers/pipeDuration';
 import dateGenerator from '../../helpers/dateGenerator';
 import SearchBar from './components/SearchBar/SearchBar';
 import Button from '../../common/Button/Button';
-import { selectAllAuthors, selectAllCourses } from '../../store/selectors';
+import {
+	selectAllAuthors,
+	selectAllCourses,
+	selectUserRole,
+} from '../../store/selectors';
 import './courses.css';
 
 function Courses() {
 	const courses = useSelector(selectAllCourses);
 	const authors = useSelector(selectAllAuthors);
+	const userRole = useSelector(selectUserRole);
 	const [query, setQuery] = useState('');
 	const [filteredCourses, setFilteredCourses] = useState(courses);
 
@@ -55,9 +60,11 @@ function Courses() {
 					setQuery={setQuery}
 					handleSubmit={searchCourses}
 				/>
-				<Link to='/courses/add'>
-					<Button buttonText='Add new course' className='btn_add' />
-				</Link>
+				{userRole === 'admin' && (
+					<Link to='/courses/add'>
+						<Button buttonText='Add new course' className='btn_add' />
+					</Link>
+				)}
 			</header>
 			<div className='cards'>{courseList}</div>
 		</>

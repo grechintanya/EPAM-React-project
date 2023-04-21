@@ -4,8 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
-import { handleUserLogin } from '../../services';
-import { userLogin } from '../../store/user/actionCreators';
+import { userLogin } from '../../store/user/thunk';
 import './login.css';
 
 function Login() {
@@ -15,19 +14,14 @@ function Login() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const handleLogin = async (e) => {
+	const handleLogin = (e) => {
 		e.preventDefault();
 		const user = {
 			email: email,
 			password: pswd,
 		};
-		const result = await handleUserLogin(user);
-		if (result?.successful) {
-			const token = result.result;
-			localStorage.setItem('token', token);
-			dispatch(userLogin(result.user, result.result));
-			navigate('/courses');
-		}
+		dispatch(userLogin(user));
+		navigate('/courses');
 	};
 
 	return (
