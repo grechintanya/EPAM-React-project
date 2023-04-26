@@ -144,7 +144,11 @@ function CourseForm() {
 			<h1 className='heading'>
 				{course ? `Edit the ${course.title} course` : 'Add a new course'}
 			</h1>
-			<form className='create_course' onSubmit={(e) => saveCourse(e)}>
+			<form
+				className='create_course'
+				onSubmit={(e) => saveCourse(e)}
+				data-testid='course-form'
+			>
 				<div className='form_header'>
 					<div>
 						<Input
