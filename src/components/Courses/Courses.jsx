@@ -3,21 +3,13 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import CourseCard from './components/CourseCard/CourseCard';
-import addAuthors from '../../helpers/addAuthors';
-import pipeDuration from '../../helpers/pipeDuration';
-import dateGenerator from '../../helpers/dateGenerator';
 import SearchBar from './components/SearchBar/SearchBar';
 import Button from '../../common/Button/Button';
-import {
-	selectAllAuthors,
-	selectAllCourses,
-	selectUserRole,
-} from '../../store/selectors';
+import { selectAllCourses, selectUserRole } from '../../store/selectors';
 import './courses.css';
 
 function Courses() {
 	const courses = useSelector(selectAllCourses);
-	const authors = useSelector(selectAllAuthors);
 	const userRole = useSelector(selectUserRole);
 	const [query, setQuery] = useState('');
 	const [filteredCourses, setFilteredCourses] = useState(courses);
@@ -32,9 +24,9 @@ function Courses() {
 			title={item.title}
 			courseID={item.id}
 			description={item.description}
-			authors={addAuthors(item.authors, authors).join(', ')}
-			duration={pipeDuration(item.duration)}
-			creationDate={dateGenerator(item.creationDate)}
+			authors={item.authors}
+			duration={item.duration}
+			creationDate={item.creationDate}
 		/>
 	));
 
@@ -66,7 +58,9 @@ function Courses() {
 					</Link>
 				)}
 			</header>
-			<div className='cards'>{courseList}</div>
+			<div className='cards' data-testid='courses'>
+				{courseList}
+			</div>
 		</>
 	);
 }

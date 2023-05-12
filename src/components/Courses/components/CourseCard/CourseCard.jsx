@@ -8,32 +8,44 @@ import { faPen } from '@fortawesome/free-solid-svg-icons';
 
 import Button from '../../../../common/Button/Button';
 import { fetchCourseDelete } from '../../../../store/courses/thunk';
-import { selectUserRole, selectUserToken } from '../../../../store/selectors';
+import {
+	selectUserRole,
+	selectUserToken,
+	selectAllAuthors,
+} from '../../../../store/selectors';
+import pipeDuration from '../../../../helpers/pipeDuration';
+import addAuthors from '../../../../helpers/addAuthors';
+import dateGenerator from '../../../../helpers/dateGenerator';
 import './courseCard.css';
 
 function CourseCard(props) {
 	const dispatch = useDispatch();
 	const userRole = useSelector(selectUserRole);
 	const token = useSelector(selectUserToken);
+	const authors = useSelector(selectAllAuthors);
 
 	return (
-		<div className='card'>
+		<div className='card' data-testid='course-card'>
 			<div className='card-left'>
-				<h3 className='card-title'>{props.title}</h3>
-				<div className='description'>{props.description}</div>
+				<h3 className='card-title' data-testid='title'>
+					{props.title}
+				</h3>
+				<div className='description' data-testid='description'>
+					{props.description}
+				</div>
 			</div>
 			<div className='card-right'>
-				<p className='card-info'>
+				<p className='card-info' data-testid='authors'>
 					<span>Authors: </span>
-					{props.authors}
+					{addAuthors(props.authors, authors).join(', ')}
 				</p>
-				<p className='card-info'>
+				<p className='card-info' data-testid='duration'>
 					<span>Duration: </span>
-					{props.duration}
+					{pipeDuration(props.duration)}
 				</p>
-				<p className='card-info'>
+				<p className='card-info' data-testid='creationDate'>
 					<span>Created: </span>
-					{props.creationDate}
+					{dateGenerator(props.creationDate)}
 				</p>
 				<Link to={`/courses/${props.courseID}`}>
 					<Button buttonText='Show Course' className='btn_right' />
@@ -65,8 +77,8 @@ CourseCard.propTypes = {
 	title: PropTypes.string,
 	courseID: PropTypes.string,
 	description: PropTypes.string,
-	authors: PropTypes.string,
-	duration: PropTypes.string,
+	authors: PropTypes.arrayOf(PropTypes.string),
+	duration: PropTypes.number,
 	creationDate: PropTypes.string,
 };
 
